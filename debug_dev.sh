@@ -2,4 +2,4 @@
 git add .
 git status
 git commit -am 'debug'
-git push dev
+git push origin dev
