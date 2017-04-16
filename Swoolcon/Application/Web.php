@@ -11,11 +11,25 @@ namespace Swoolcon\Application;
 use Phalcon\Di;
 use Phalcon\DiInterface;
 use Swoolcon\Application;
+use Swoolcon\Exception;
+use Swoolcon\Http\Request;
 use Swoolcon\ServiceProvider\EventManagerServiceProvider;
 use Swoolcon\ServiceProvider\TestTestServiceProvider;
+use Swoole\Http\Response as SwooleResponse;
+use Swoole\Http\Request as SwooleRequest;
 
 class Web extends Application
 {
+    /**
+     * @var SwooleRequest
+     */
+    protected $swooleRequest;
+
+    /**
+     * @var SwooleResponse
+     */
+    protected $swooleResponse;
+
     public function run()
     {
 
@@ -38,11 +52,32 @@ class Web extends Application
             $di = new Di();
             $this->setDI($di);
         }
-        //$di['test'] = $this->diPreLoad['test'];   //可以这么干
-        $di->setShared('test',$this->diPreLoad->getShared('test')); //试一下，哪种快点，还有直接new的情况
+
+        if(!$this->swooleRequest){
+            throw new Exception('swoole request is not empty');
+        }
+
+        if(!$this->swooleResponse){
+            throw new Exception('swoole response is not empty');
+        }
 
         $this->initializeServiceProviders([
             //TestTestServiceProvider::class
         ], $di);
+
+
+        return $this;
+    }
+
+    public function setSwooleRequest(SwooleRequest $request)
+    {
+        $this->swooleRequest = $request;
+        return $this;
+    }
+
+    public function setSwooleResponse(SwooleResponse $response)
+    {
+        $this->swooleResponse = $response;
+        return $this;
     }
 }

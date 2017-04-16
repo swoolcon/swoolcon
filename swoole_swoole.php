@@ -25,7 +25,7 @@ class ServerSwoole
 {
 
     /**
-     * @var Swoolcon\Application
+     * @var Swoolcon\Application\Web
      */
     private $application = null;
 
@@ -37,7 +37,8 @@ class ServerSwoole
         $port   = '9999';
         $server = new SwooleServer($host, $port);
         $server->set([
-            'max_request' => '50'
+            'max_request' => '50',
+            //'worker_num' => '1',
         ]);
         $server->on('WorkerStart', [$this, 'onWorkerStart']);
         $server->on('Request', [$this, 'onRequest']);
@@ -57,32 +58,25 @@ class ServerSwoole
 
     public function onRequest(SwooleRequest $request, SwooleResponse $response)
     {
+        ob_start();
+
 
         $request->get['_url'] = $request->server['request_uri'];
 
         $app = $this->application;
-        $app->register();
+        $app->setSwooleRequest($request)->setSwooleResponse($response)->register();
 
         $di = $app->getDI();
-
-
-        ob_start();
-
         echo '<pre>';
+        $app->run();
 
-        $a = $di->get('test');
-        var_dump(get_class($a));
 
-        echo '??' . time() . PHP_EOL;
-
-        var_dump($this->time);
-
-        $loader = new Phalcon\Loader();
-        $loader->registerDirs([__DIR__ . '/tmp/']);
-        $loader->register();
         echo '</pre>';
         $response->end(ob_get_contents());
         ob_clean();
+
+
+
 
 
     }

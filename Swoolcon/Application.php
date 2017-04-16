@@ -43,6 +43,9 @@ abstract class Application
      */
     protected $diPreLoad = null;    //进程重启前，会常驻内存
 
+    /**
+     * @var DiInterface
+     */
     protected $di = null;
 
 
@@ -118,6 +121,9 @@ abstract class Application
         return $this->services;
     }
 
+    /**
+     * @return DiInterface
+     */
     public function getDi()
     {
         return $this->di;
