@@ -71,6 +71,19 @@ if (!function_exists('cache_path')) {
     }
 }
 
+if (!function_exists('modules_path')) {
+    /**
+     * Get the modules path.
+     *
+     * @param  string $path
+     * @return string
+     */
+    function modules_path($path = '')
+    {
+        return app_path('App' . DIRECTORY_SEPARATOR . 'Modules') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+    }
+}
+
 if (!function_exists('content_modules_path')) {
 
     function content_modules_path($path = '')

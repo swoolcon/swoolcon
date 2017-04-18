@@ -31,57 +31,23 @@ class ConfigServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->checkApplicationConfig();
-        $merge = $this->mergeCallback();
 
         $this->di->setShared(
             $this->serviceName,
-            function () use ($merge) {
+            function () {
                 /** @noinspection PhpIncludeInspection */
                 $config = include config_path('Config.php');
 
-                if (!$config || !is_array($config)) {
+                //if (!$config || !is_array($config)) {
+                if (!$config || !($config instanceof \Phalcon\Config)) {
                     trigger_error('Could not detect config file', E_USER_ERROR);
                 }
 
-                $config = new Config($config);
-
-                $merge($config, content_path('Options/Options.php'));
 
                 return $config;
             }
         );
     }
 
-    protected function checkApplicationConfig()
-    {
-        $configPath = config_path('Config.php');
-        if (!file_exists($configPath)) {
-            throw new RuntimeException(
-                sprintf(
-                    'The Application config not found. Please make sure that the file "%s" is present',
-                    $configPath
-                )
-            );
-        }
-    }
 
-    protected function mergeCallback()
-    {
-        return function (&$config, $path) {
-            if (file_exists($path)) {
-                /** @noinspection PhpIncludeInspection */
-                $toMerge = require $path;
-
-                if (is_array($toMerge)) {
-                    $toMerge = new Config($toMerge);
-                }
-
-                if ($toMerge instanceof Config) {
-                    /** @var Config $config */
-                    $config->merge($toMerge);
-                }
-            }
-        };
-    }
 }

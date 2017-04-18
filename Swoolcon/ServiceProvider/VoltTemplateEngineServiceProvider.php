@@ -46,9 +46,9 @@ class VoltTemplateEngineServiceProvider extends ServiceProvider
 
                 $volt->setOptions(
                     [
-                        'compiledPath'      => $config->application->view->compiledPath,
-                        'compiledSeparator' => $config->application->view->compiledSeparator,
-                        'compiledExtension' => $config->application->view->compiledExtension,
+                        'compiledPath'      => $config->application->cacheDir.'/compiledPath',
+                        'compiledSeparator' => $config->application->cacheDir.'/compiledSeparator',
+                        'compiledExtension' => $config->application->cacheDir.'/compiledExtension',
                         'compileAlways'     => (bool) $config->application->debug,
                     ]
                 );

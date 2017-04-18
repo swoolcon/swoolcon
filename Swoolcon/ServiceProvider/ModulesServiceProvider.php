@@ -6,18 +6,15 @@
  * Date: 17-2-27
  * Time: 下午3:54
  */
-namespace App\Common\Library\Providers;
-
+namespace Swoolcon\ServiceProvider;
+use Swoolcon\ServiceProvider;
 use Phalcon\Cli\Console;
 use Phalcon\Registry;
 
 use App\Modules\Frontend\Module as FrontendModule;
-use App\Modules\Error\Module as ErrorModule;
-use App\Modules\Tester\Module as TesterModule;
-use App\Modules\Tools\Module as ToolsModule;
-use App\Cli\Module as CliModule;
-use App\SwooleCli\Module as SwooleCliModule;
-use App\Modules\Backend\Module as BackendModule;
+
+
+
 
 class ModulesServiceProvider extends ServiceProvider
 {
@@ -27,80 +24,17 @@ class ModulesServiceProvider extends ServiceProvider
 
     public function configure()
     {
-        try {
 
-            $directory = new \RecursiveDirectoryIterator(content_modules_path() . '/');
-        } catch (\Exception $exception) {
-            $directory = [];
-        }
-
-        foreach ($directory as $item) {
-            $name = ucfirst($item->getFilename());
-
-            if (!$item->isDir() || $name[0] == '.') {
-                continue;
-            }
-
-            $this->modules[$name] = [
-                'className' => 'App\\' . $name . '\\Module',
-                'path'      => content_modules_path("{$name}/Module.php"),
-                'router'    => content_modules_path("{$name}/Config/Routing.php"),
-            ];
-        }
 
         $app = [
-            'Backend'   => [
-                'className' => BackendModule::class,
-                'path'      => modules_path('Backend/Module.php'),
-                'router'    => modules_path('Backend/Config/Routing.php'),
-            ],
-            'Error'     => [
-                'className' => ErrorModule::class,
-                'path'      => modules_path('Error/Module.php'),
-                'router'    => modules_path('Error/Config/Routing.php'),
 
-            ],
-            'Frontend'  => [
+            'frontend'  => [
                 'className' => FrontendModule::class,
                 'path'      => modules_path('Frontend/Module.php'),
                 'router'    => modules_path('Frontend/Config/Routing.php'),
 
             ],
-            'Tester'    => [
-                'className' => TesterModule::class,
-                'path'      => modules_path('Tester/Module.php'),
-                'router'    => modules_path('Tester/Config/Routing.php'),
-            ],
-            'Tools'     => [
-                'className' => ToolsModule::class,
-                'path'      => modules_path('Tools/Module.php'),
-                'router'    => modules_path('Tools/Config/Routing.php'),
-            ],
 
-
-            /**
-             * cli 和swoole server 单独列出来
-             */
-            'Cli'       => [
-                'className' => CliModule::class,
-                'path'      => application_path('Cli/Module.php'),
-                'router'    => application_path('Cli/Config/Routing.php'),
-            ],
-            'SwooleCli' => [
-                'className' => SwooleCliModule::class,
-                'path'      => application_path('SwooleCli/Module.php'),
-                'router'    => application_path('SwooleCli/Config/Routing.php'),
-            ],
-            /**/
-
-
-            /*
-            'oauth' => [
-                'className' => oAuth::class,
-                'path'      => modules_path('oauth/Module.php'),
-                'router'    => modules_path('oauth/config/routing.php'),
-
-            ],*/
 
 
         ];
@@ -136,7 +70,7 @@ class ModulesServiceProvider extends ServiceProvider
                     include_once $module['path'];
                 }
 
-                /** @var \App\Common\ModuleInterface $moduleBootstrap */
+                /** @var \Swoolcon\ModuleInterface $moduleBootstrap */
                 $moduleBootstrap = new $moduleClass($di);
                 $moduleBootstrap->initialize();
 
@@ -149,13 +83,10 @@ class ModulesServiceProvider extends ServiceProvider
 
         //在应用中注册模块
 
+        /** @var \Phalcon\Mvc\Application $application */
         $application = $di->getShared('bootstrap')->getApplication();
+        $application->registerModules($modules);
 
-        if ($application instanceof Console) {
-            $application->registerModules($this->modules);
-        } else {
-            $application->registerModules($modules);
-        }
 
     }
 }

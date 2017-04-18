@@ -44,22 +44,6 @@ class RoutingWebServiceProvider extends ServiceProvider
             $router = require config_path('Router.php');
             $router->removeExtraSlashes(true);
 
-            $modules = $di->get('modules');
-            foreach ($modules as $module) {
-                if (empty($module->router)) {
-                    continue;
-                }
-
-                /** @noinspection PhpIncludeInspection */
-                $group = require $module->router;
-
-                if (!$group || !$group instanceof GroupInterface) {
-                    continue;
-                }
-
-                $router->mount($group);
-                $router->setEventsManager($di->get('eventsManager'));
-            }
 
             $router->setDI($di);
             return $router;

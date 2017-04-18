@@ -41,7 +41,7 @@ class ServerSwoole
             //'worker_num' => '1',
         ]);
         $server->on('WorkerStart', [$this, 'onWorkerStart']);
-        $server->on('Request', [$this, 'onRequest']);
+        $server->on('request', [$this, 'onRequest']);
 
         echo sprintf('server started on %s:%s%s', $host, $port, PHP_EOL);
         $server->start();
@@ -50,33 +50,28 @@ class ServerSwoole
     public function onWorkerStart(SwooleServer $server, $workerId)
     {
 
-        $app               = new Swoolcon\Application\Web();
-        $this->application = $app;
+        //$app               = new Swoolcon\Application\Web();
+        //$this->application = $app;
 
 
     }
 
     public function onRequest(SwooleRequest $request, SwooleResponse $response)
     {
+        $app               = new Swoolcon\Application\Web();
+        $this->application = $app;
         ob_start();
-
 
         $request->get['_url'] = $request->server['request_uri'];
 
         $app = $this->application;
         $app->setSwooleRequest($request)->setSwooleResponse($response)->register();
 
-        $di = $app->getDI();
-        echo '<pre>';
-        $app->run();
+        echo $app->run();
 
 
-        echo '</pre>';
         $response->end(ob_get_contents());
         ob_clean();
-
-
-
 
 
     }

@@ -14,6 +14,7 @@ class IndexController extends ControllerBase
     {
 
         var_dump('hello swoolcon');
+        var_dump($this->request->get());
         return false;
     }
 

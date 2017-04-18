@@ -58,7 +58,6 @@ abstract class Application
 
         $this->diPreLoad = $di;
 
-
         $this->registerProviders();
     }
 
@@ -134,6 +133,7 @@ abstract class Application
         $this->di = $di;
         return $this;
     }
+
 
     abstract protected function registerProviders();
 

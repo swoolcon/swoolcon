@@ -56,7 +56,7 @@ class ViewServiceProvider extends ServiceProvider
                 }
 
                 $view->registerEngines($engines);
-                $view->setViewsDir($config->application->view->viewsDir);
+                $view->setViewsDir($config->application->viewsDir);
                 $view->disableLevel([
                     //View::LEVEL_MAIN_LAYOUT => true,
                     //View::LEVEL_LAYOUT      => true,

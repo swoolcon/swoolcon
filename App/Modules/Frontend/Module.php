@@ -11,9 +11,15 @@ namespace App\Modules\Frontend;
 use Phalcon\DiInterface;
 use Phalcon\Loader;
 use Phalcon\Mvc\ModuleDefinitionInterface;
+use Phalcon\Mvc\View;
 
-class Module implements ModuleDefinitionInterface
+class Module extends \Swoolcon\Module implements ModuleDefinitionInterface
 {
+
+    public function getHandlersNamespace()
+    {
+        return 'App\Modules\Frontend\Controllers';
+    }
 
     public function registerAutoloaders(DiInterface $di = null)
     {
@@ -29,6 +35,8 @@ class Module implements ModuleDefinitionInterface
 
     public function registerServices(DiInterface $di = null)
     {
-
+        /** @var View $view */
+        $view = $di->getShared('view');
+        $view->setViewsDir(__DIR__ . '/Views');
     }
 }
