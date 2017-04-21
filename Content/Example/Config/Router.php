@@ -7,35 +7,27 @@
  * Time: 下午4:18
  */
 
+$router = new Swoolcon\Mvc\Router();
+$router->removeExtraSlashes(true);
 
-if(!function_exists('get_router')){
-    function get_router(\Phalcon\Mvc\Router $router){
+$frontend = new \Phalcon\Mvc\Router\Group([
+    'module'     => 'frontend',
+    'namespace'  => 'App\\Modules\\Frontend\\Controllers',
+    'controller' => 'index',
+    'action'     => 'index',
+]);
+$frontend->setPrefix('');
 
-        $router->removeExtraSlashes(true);
+$frontend->add('[/]?', [
+    'action' => 'index',
+]);
+$frontend->add('/:controller[/]?', [
+    'controller' => 1,
+]);
+$frontend->add('/:controller/:action[/]?', [
+    'controller' => 1,
+    'action'     => 2,
+]);
 
-        $frontend = new \Phalcon\Mvc\Router\Group([
-            'module'     => 'frontend',
-            'namespace'  => 'App\\Modules\\Frontend\\Controllers',
-            'controller' => 'index',
-            'action'     => 'index',
-        ]);
-        $frontend->setPrefix('');
-
-        $frontend->add('[/]?', [
-            'action' => 'index',
-        ]);
-        $frontend->add('/:controller[/]?', [
-            'controller' => 1,
-        ]);
-        $frontend->add('/:controller/:action[/]?', [
-            'controller' => 1,
-            'action'     => 2,
-        ]);
-
-        $router->mount($frontend);
-
-
-        return $router;
-
-    }
-}
+$router->mount($frontend);
+return $router;

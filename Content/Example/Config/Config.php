@@ -22,7 +22,13 @@ return new \Phalcon\Config([
         'modelsDir'     => app_path('App/Common/Models'),
         'migrationsDir' => content_path('Migrations'),
         'cacheDir'      => content_path('Cache'),
-        'viewsDir'      => content_path('Cache'),
+        'viewsDir'      => '',
         'baseUri'       => '/',
-    ]
+        'debug'         => true,
+        'logger'        => [
+            'path'   => logs_path(),
+            'format' => '',
+            'level'  => '',
+        ],
+    ],
 ]);

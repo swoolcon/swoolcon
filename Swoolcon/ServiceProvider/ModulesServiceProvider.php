@@ -12,6 +12,7 @@ use Phalcon\Cli\Console;
 use Phalcon\Registry;
 
 use App\Modules\Frontend\Module as FrontendModule;
+use Swoolcon\Modules\Error\Module as DefaultErrorModule;
 
 
 
@@ -32,10 +33,13 @@ class ModulesServiceProvider extends ServiceProvider
                 'className' => FrontendModule::class,
                 'path'      => modules_path('Frontend/Module.php'),
                 'router'    => modules_path('Frontend/Config/Routing.php'),
-
             ],
 
-
+            'Error'  => [
+                'className' => DefaultErrorModule::class,
+                'path'      => app_path('Swoolcon/Modules/Error/Module.php'),
+                'router'    => app_path('Swoolcon/Modules/Error/Config/Routing.php'),
+            ],
 
         ];
 
@@ -78,7 +82,7 @@ class ModulesServiceProvider extends ServiceProvider
             };
 
 
-            $this->getDI()->setShared($module['className'], $modules[$key]);
+            $di->setShared($module['className'], $modules[$key]);
         }
 
         //在应用中注册模块

@@ -12,6 +12,7 @@ use Phalcon\DiInterface;
 use Phalcon\Loader;
 use Phalcon\Mvc\ModuleDefinitionInterface;
 use Phalcon\Mvc\View;
+use Swoolcon\Events\ViewListener;
 
 class Module extends \Swoolcon\Module implements ModuleDefinitionInterface
 {
@@ -35,8 +36,10 @@ class Module extends \Swoolcon\Module implements ModuleDefinitionInterface
 
     public function registerServices(DiInterface $di = null)
     {
+        $eventsManager = $di->getShared('eventsManager');
+        $eventsManager->attach('view:notFoundView', new ViewListener($di));
         /** @var View $view */
         $view = $di->getShared('view');
-        $view->setViewsDir(__DIR__ . '/Views');
+        $view->setViewsDir(__DIR__ . '/Views/');
     }
 }

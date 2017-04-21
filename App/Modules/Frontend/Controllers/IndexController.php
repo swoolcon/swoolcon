@@ -13,14 +13,12 @@ class IndexController extends ControllerBase
     public function indexAction()
     {
 
-        var_dump('hello swoolcon');
-        var_dump($this->request->get());
-        return false;
     }
 
     public function testAction()
     {
         var_dump('test');
+        var_dump($this->request->get());
         return false;
     }
 }

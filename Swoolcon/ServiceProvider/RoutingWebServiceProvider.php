@@ -13,8 +13,6 @@
 namespace Swoolcon\ServiceProvider;
 use Swoolcon\ServiceProvider;
 use Phalcon\Mvc\Router as MvcRouter;
-use Phalcon\Cli\Router as CliRouter;
-use Phalcon\Mvc\Router\GroupInterface;
 
 /**
  * \Phanbook\Common\Library\Providers\RoutingServiceProvider
@@ -43,7 +41,6 @@ class RoutingWebServiceProvider extends ServiceProvider
             /** @var MvcRouter $router */
             $router = require config_path('Router.php');
             $router->removeExtraSlashes(true);
-
 
             $router->setDI($di);
             return $router;

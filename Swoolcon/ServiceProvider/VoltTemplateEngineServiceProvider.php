@@ -11,6 +11,7 @@
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
 namespace Swoolcon\ServiceProvider;
+
 use Swoolcon\ServiceProvider;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\View\Engine\Volt;
@@ -36,23 +37,28 @@ class VoltTemplateEngineServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $di = $this->di;
         $this->di->setShared(
             $this->serviceName,
-            function (ViewBaseInterface $view, DiInterface $di = null) {
+            function (ViewBaseInterface $view, DiInterface $diView = null) use ($di) {
                 /** @var \Phalcon\DiInterface $this */
                 $config = $this->getShared('config');
 
-                $volt = new Volt($view, $di ?: $this);
+                $volt = new Volt($view, $diView ?: $di);
 
-                $volt->setOptions(
-                    [
-                        'compiledPath'      => $config->application->cacheDir.'/compiledPath',
-                        'compiledSeparator' => $config->application->cacheDir.'/compiledSeparator',
-                        'compiledExtension' => $config->application->cacheDir.'/compiledExtension',
-                        'compileAlways'     => (bool) $config->application->debug,
-                    ]
-                );
+                $volt->setOptions([
+                    'compiledPath'      => $config->application->cacheDir . '/Volt/',
+                    //'compiledSeparator' => '%%',
+                    //'compiledExtension' => '.php',
+                    'compileAlways'     => (bool)$config->application->debug,
+                ]);
 
+                /*var_dump([
+                    'compiledPath'      => $config->application->cacheDir.'/Volt/compiledPath',
+                    'compiledSeparator' => $config->application->cacheDir.'/Volt/compiledSeparator',
+                    'compiledExtension' => $config->application->cacheDir.'/Volt/compiledExtension',
+                    'compileAlways'     => (bool) $config->application->debug,
+                ]);exit;*/
                 //$volt->getCompiler()->addExtension(new VoltFunctions());
 
                 return $volt;

@@ -11,6 +11,7 @@
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
 namespace Swoolcon\ServiceProvider;
+
 use Swoolcon\ServiceProvider;
 
 use Phalcon\Logger;
@@ -24,7 +25,7 @@ use Phalcon\Logger\Formatter\Line;
  */
 class LoggerServiceProvider extends ServiceProvider
 {
-    const DEFAULT_LEVEL = 'debug';
+    const DEFAULT_LEVEL  = 'debug';
     const DEFAULT_FORMAT = '[%date%][%type%] %message%';
 
     /**
@@ -61,6 +62,13 @@ class LoggerServiceProvider extends ServiceProvider
             function ($filename = null) use ($logLevels) {
                 /** @var \Phalcon\DiInterface $this */
                 $config = $this->getShared('config')->application->logger;
+                if (!$config) {
+                    $config = [
+                        'path'   => logs_path(),
+                        'format' => '',
+                        'level'  => '',
+                    ];
+                }
 
                 if (!isset($config->level)) {
                     $level = self::DEFAULT_LEVEL;

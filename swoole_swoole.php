@@ -29,8 +29,6 @@ class ServerSwoole
      */
     private $application = null;
 
-    private $time = '';
-
     public function start()
     {
         $host   = '127.0.0.1';
@@ -49,35 +47,58 @@ class ServerSwoole
 
     public function onWorkerStart(SwooleServer $server, $workerId)
     {
-
-        //$app               = new Swoolcon\Application\Web();
-        //$this->application = $app;
-
+        $app               = new Swoolcon\Application\Web();
+        $this->application = $app;
 
     }
 
     public function onRequest(SwooleRequest $request, SwooleResponse $response)
     {
-        $app               = new Swoolcon\Application\Web();
-        $this->application = $app;
-        ob_start();
+        //目前不处理静态文件，当成动态文件处理，静态文件建议交给nginx
 
+
+        //动态脚本处理 request_uri
+        $app = $this->application;
         $request->get['_url'] = $request->server['request_uri'];
 
-        $app = $this->application;
+
+        ob_start();
         $app->setSwooleRequest($request)->setSwooleResponse($response)->register();
-
         echo $app->run();
-
-
         $response->end(ob_get_contents());
         ob_clean();
 
-
+        //把超全局unset掉
+        unset($_SESSION);
+        unset($_GET);
+        unset($_POST);
+        unset($_REQUEST);
+        unset($_FILES);
+        unset($_ENV);
     }
 
 
 }
+
+echo <<<swoolcon
+--------------------------------------------------------------------------------------------------
+
+   @@@@@@@  @@@           @@@   @@@@@        @@@@@     @@@        @@@@@@      @@@@@     @@@    @@@
+  @@@  @@@@  @@@   @@@   @@@   @@@  @@@     @@@  @@@   @@@       @@@  @@@    @@@  @@@   @@@@   @@@
+ @@@    @@@  @@@   @@@   @@@  @@@    @@@   @@@    @@@  @@@      @@@    @@@  @@@    @@@  @@@@   @@@
+ @@@         @@@  @@@@@  @@@ @@@      @@@ @@@      @@@ @@@     @@@     @@@ @@@      @@@ @@@@@  @@@
+  @@@         @@@ @@@@@  @@@ @@@      @@@ @@@      @@@ @@@     @@@         @@@      @@@ @@@@@  @@@
+   @@@@@@     @@@ @@ @@ @@@  @@@      @@@ @@@      @@@ @@@     @@@         @@@      @@@ @@@@@@ @@@
+      @@@@@   @@@ @@ @@ @@@  @@@      @@@ @@@      @@@ @@@     @@@         @@@      @@@ @@@ @@@@@@
+        @@@   @@@@@@ @@@@@@  @@@      @@@ @@@      @@@ @@@     @@@         @@@      @@@ @@@ @@@@@@
+         @@@   @@@@@  @@@@   @@@      @@@ @@@      @@@ @@@     @@@     @@@ @@@      @@@ @@@  @@@@@
+ @@@    @@@    @@@@   @@@@    @@@    @@@@  @@@    @@@@ @@@      @@@    @@@  @@@    @@@@ @@@  @@@@@
+  @@@   @@@    @@@@   @@@@     @@@  @@@@    @@@  @@@@  @@@       @@@  @@@@   @@@  @@@@  @@@   @@@@
+   @@@@@@@     @@@@   @@@@      @@@@@@       @@@@@@    @@@@@@@@   @@@@@@      @@@@@@    @@@    @@@
+
+--------------------------------------------------------------------------------------------------
+
+swoolcon;
 
 
 (new ServerSwoole())->start();

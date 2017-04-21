@@ -51,7 +51,7 @@ class DispatcherListener extends AbstractEvent
                 );
             }
 
-            /** @var \App\Common\ModuleInterface $module */
+            /** @var \Swoolcon\ModuleInterface $module */
             $module = $di->get($moduleDefinition->className);
 
             $dispatcher->setModuleName($forward['module']);
@@ -83,7 +83,7 @@ class DispatcherListener extends AbstractEvent
                     $code = 400;
                     $dispatcher->forward([
                         'module'     => 'Error',
-                        'namespace'  => 'App\Modules\Error\Controllers',
+                        //'namespace'  => 'App\Modules\Error\Controllers',
                         'controller' => 'index',
                         'action'     => 'show400',
                     ]);
@@ -93,7 +93,7 @@ class DispatcherListener extends AbstractEvent
                     $code = 404;
                     $dispatcher->forward([
                         'module'     => 'Error',
-                        'namespace'  => 'App\Modules\Error\Controllers',
+                        //'namespace'  => 'App\Modules\Error\Controllers',
                         'controller' => 'index',
                         'action'     => 'show404',
                     ]);
@@ -110,7 +110,7 @@ class DispatcherListener extends AbstractEvent
 
         $dispatcher->forward([
             'module'     => 'Error',
-            'namespace'  => 'App\Modules\Error\Controllers',
+            //'namespace'  => 'App\Modules\Error\Controllers',
             'controller' => 'index',
             'action'     => 'show500',
         ]);

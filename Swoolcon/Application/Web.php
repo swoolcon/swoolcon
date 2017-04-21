@@ -61,11 +61,14 @@ class Web extends Application
     public function register()
     {
         //di
-        $di = $this->getDi();
+        /*$di = $this->getDi();
         if (!$di || !($di instanceof DiInterface)) {
             $di = new Di();
             $this->setDI($di);
-        }
+        }*/
+
+        $di = new Di();
+        $this->setDI($di);
         $di->setShared('bootstrap', $this);
         $this->app = new \Phalcon\Mvc\Application($di);
 
@@ -100,7 +103,6 @@ class Web extends Application
             ServiceProvider\RedisServiceProvider::class,
             ServiceProvider\ModulesServiceProvider::class,
 
-
             ServiceProvider\SwooleCookieServiceProvider::class,
             ServiceProvider\SwooleCookiesServiceProvider::class,
             ServiceProvider\SwooleRequestServiceProvider::class,
@@ -111,8 +113,6 @@ class Web extends Application
             ServiceProvider\SwooleWebDatabaseServiceProvider::class,
             ServiceProvider\SwooleStaticPropServiceProvider::class
         ], $di);
-
-
 
         return $this;
     }
