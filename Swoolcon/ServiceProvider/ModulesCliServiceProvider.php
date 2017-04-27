@@ -11,11 +11,10 @@ use Swoolcon\ServiceProvider;
 use Phalcon\Cli\Console;
 use Phalcon\Registry;
 
-use App\WebModules\Frontend\Module as FrontendModule;
-use Swoolcon\Modules\Error\Module as DefaultErrorModule;
+use App\CliModules\Main\Module as CliModule;
+use App\CliModules\Server\Module as ServerModule;
 
-
-class ModulesServiceProvider extends ServiceProvider
+class ModulesCliServiceProvider extends ServiceProvider
 {
     protected $serviceName = 'modules';
 
@@ -24,16 +23,15 @@ class ModulesServiceProvider extends ServiceProvider
     public function configure()
     {
         $app = [
-            'frontend'  => [
-                'className' => FrontendModule::class,
-                'path'      => modules_web_path('Frontend/Module.php'),
-                'router'    => modules_web_path('Frontend/Config/Routing.php'),
+            'main'  => [
+                'className' => CliModule::class,
+                'path'      => modules_cli_path('Main/Module.php'),
+                'router'    => '',
             ],
-
-            'Error'  => [
-                'className' => DefaultErrorModule::class,
-                'path'      => app_path('Swoolcon/Modules/Error/Module.php'),
-                'router'    => app_path('Swoolcon/Modules/Error/Config/Routing.php'),
+            'server'  => [
+                'className' => ServerModule::class,
+                'path'      => modules_cli_path('Server/Module.php'),
+                'router'    => '',
             ],
 
         ];
@@ -81,9 +79,9 @@ class ModulesServiceProvider extends ServiceProvider
 
         //在应用中注册模块
 
-        /** @var \Phalcon\Mvc\Application $application */
+        /** @var \Phalcon\Cli\Console $application */
         $application = $di->getShared('bootstrap')->getApplication();
-        $application->registerModules($modules);
+        $application->registerModules($this->modules);
 
     }
 }

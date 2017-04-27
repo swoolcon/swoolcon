@@ -15,7 +15,7 @@ use Phalcon\Mvc\Router\Group as RouterGroup;
 
 $error = new RouterGroup([
     'module'    => 'Error',
-    'namespace' => 'Swoolcon\Modules\Error\Controllers',
+    'namespace' => Swoolcon\Modules\Error\Controllers::class,
 ]);
 
 $error->addGet('/bad-request', 'Index::show400')

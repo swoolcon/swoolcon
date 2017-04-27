@@ -71,16 +71,29 @@ if (!function_exists('cache_path')) {
     }
 }
 
-if (!function_exists('modules_path')) {
+if (!function_exists('modules_web_path')) {
     /**
      * Get the modules path.
      *
      * @param  string $path
      * @return string
      */
-    function modules_path($path = '')
+    function modules_web_path($path = '')
     {
-        return app_path('App' . DIRECTORY_SEPARATOR . 'Modules') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+        return app_path('App' . DIRECTORY_SEPARATOR . 'WebModules') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+    }
+}
+
+if (!function_exists('modules_cli_path')) {
+    /**
+     * Get the modules path.
+     *
+     * @param  string $path
+     * @return string
+     */
+    function modules_cli_path($path = '')
+    {
+        return app_path('App' . DIRECTORY_SEPARATOR . 'CliModules') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }
 

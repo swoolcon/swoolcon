@@ -11,19 +11,21 @@
  * @author  Phanbook <hello@phanbook.com>
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-namespace Swoolcon\Modules\Error;
+namespace App\CliModules\Server;
 
+use Phalcon\Cli\Dispatcher;
 use Phalcon\Loader;
 use Phalcon\DiInterface;
-use Swoolcon\Module as BaseModule;
-use Swoolcon\Events\ViewListener;
+use App\Common\Module as BaseModule;
+use Phalcon\Mvc\ModuleDefinitionInterface;
+
 
 /**
- * \App\Error\Module
+ * \App\Frontend\Module
  *
- * @package App\Error
+ * @package Phanbook\Error
  */
-class Module extends BaseModule
+class Module extends BaseModule implements ModuleDefinitionInterface
 {
     /**
      * {@inheritdoc}
@@ -32,7 +34,7 @@ class Module extends BaseModule
      */
     public function getHandlersNamespace()
     {
-        return __NAMESPACE__ . '\Controllers';
+        return Tasks::class;
     }
 
     /**
@@ -52,13 +54,9 @@ class Module extends BaseModule
      */
     public function registerServices(DiInterface $di)
     {
-        // Read configuration
-        $moduleConfig  = require __DIR__ . '/Config/Config.php';
-        $eventsManager = $di->getShared('eventsManager');
-        $eventsManager->attach('view:notFoundView', new ViewListener($di));
-
-        // Setting up the View Component
-        $view = $di->getShared('view');
-        $view->setViewsDir($moduleConfig['viewsDir']);
+        //dispatcher
+        /** @var Dispatcher $dispatcher */
+        $dispatcher = $di->get('dispatcher');
+        $dispatcher->setDefaultNamespace($this->getHandlersNamespace());
     }
 }

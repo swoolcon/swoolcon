@@ -12,11 +12,12 @@ require __DIR__ . '/Bootstrap/Autoloader.php';
 // Create the Application
 $console = new \Swoolcon\Application\Command();
 
-$console->setDefaultModule('server')->register();
+$console->register();
 
 
 /** @var \Swoolcon\Cli\Console $app */
 $app = $console->getApplication();
+
 $app->setArgs($argv, $argc);
 
 try {

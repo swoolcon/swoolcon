@@ -14,8 +14,8 @@ require 'Helper.php';
 
 
 (new Loader)->registerNamespaces([
-    'App\\Common'  => BASE_PATH . '/App/Common',
-    'Swoolcon'     => BASE_PATH . '/Swoolcon',
+    'App'      => BASE_PATH . '/App',
+    'Swoolcon' => BASE_PATH . '/Swoolcon',
 ])->register();
 
 

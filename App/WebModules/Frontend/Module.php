@@ -6,7 +6,7 @@
  * Date: 17-3-29
  * Time: 下午5:20
  */
-namespace App\Modules\Frontend;
+namespace App\WebModules\Frontend;
 
 use Phalcon\DiInterface;
 use Phalcon\Loader;
@@ -19,18 +19,11 @@ class Module extends \Swoolcon\Module implements ModuleDefinitionInterface
 
     public function getHandlersNamespace()
     {
-        return 'App\Modules\Frontend\Controllers';
+        return Controllers::class;
     }
 
     public function registerAutoloaders(DiInterface $di = null)
     {
-        $loader = new Loader();
-
-        $loader->registerNamespaces([
-            __NAMESPACE__ . '\\Controllers' => __DIR__ . '/Controllers/'
-        ]);
-
-        $loader->register();
 
     }
 

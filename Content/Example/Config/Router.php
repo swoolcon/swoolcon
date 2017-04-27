@@ -12,7 +12,7 @@ $router->removeExtraSlashes(true);
 
 $frontend = new \Phalcon\Mvc\Router\Group([
     'module'     => 'frontend',
-    'namespace'  => 'App\\Modules\\Frontend\\Controllers',
+    'namespace'  => App\WebModules\Frontend\Controllers::class,
     'controller' => 'index',
     'action'     => 'index',
 ]);
@@ -30,4 +30,5 @@ $frontend->add('/:controller/:action[/]?', [
 ]);
 
 $router->mount($frontend);
+
 return $router;

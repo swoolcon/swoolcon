@@ -12,22 +12,23 @@
  */
 namespace Swoolcon\ServiceProvider;
 use Swoolcon\ServiceProvider;
-use Phalcon\Mvc\Router as MvcRouter;
-use Phalcon\Cli\Router as CliRouter;
-use Phalcon\Mvc\Router\GroupInterface;
+
+use Phalcon\Cli\Dispatcher as CliDi;
+use Swoolcon\Events\DispatcherListener;
+use Phalcon\Events\ManagerInterface;
 
 /**
- * \Phanbook\Common\Library\Providers\RoutingServiceProvider
+ * \Phanbook\Common\Library\Providers\MvcDispatcherServiceProvider
  *
  * @package Phanbook\Common\Library\Providers
  */
-class RoutingCliServiceProvider extends ServiceProvider
+class DispatcherCliServiceProvider extends ServiceProvider
 {
     /**
      * The Service name.
      * @var string
      */
-    protected $serviceName = 'router';
+    protected $serviceName = 'dispatcher';
 
     /**
      * {@inheritdoc}
@@ -38,12 +39,13 @@ class RoutingCliServiceProvider extends ServiceProvider
     {
         $di = $this->di;
         $di->setShared($this->serviceName,function() use($di){
-
-
-            $router = require config_path('CliRouter.php');
-            $router->setDI($di);
-            $router->handle();
-            return $router;
+            $dispatcher = new CliDi();
+            /** @var ManagerInterface $eventManager */
+            $eventManager = $di->get('eventsManager');
+            $eventManager->attach('dispatch', new DispatcherListener($this));
+            $dispatcher->setDI($di);
+            $dispatcher->setEventsManager($eventManager);
+            return $dispatcher;
         });
     }
 }

@@ -13,9 +13,9 @@
  */
 namespace Swoolcon\Modules\Error\Controllers;
 
-use Phalcon\Mvc\Controller;
 use Phalcon\DispatcherInterface;
 use Phalcon\Mvc\View;
+use Swoolcon\Modules\Error\Controllers;
 
 /**
  * \Phanbook\Error\Controllers\IndexController
@@ -24,7 +24,7 @@ use Phalcon\Mvc\View;
  *
  * @package Phanbook\Error\Controllers
  */
-class IndexController extends Controller
+class IndexController extends Controllers
 {
     /**
      * Triggered before executing the controller/action method.

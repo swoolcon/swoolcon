@@ -17,3 +17,8 @@ if (!file_exists(config_path('Config.php'))) {
 if (!file_exists(config_path('Router.php'))) {
     copy(content_path('Example/Config/Router.php'), config_path('Router.php'));
 }
+
+
+if (!file_exists(config_path('CliRouter.php'))) {
+    copy(content_path('Example/Config/CliRouter.php'), config_path('CliRouter.php'));
+}
