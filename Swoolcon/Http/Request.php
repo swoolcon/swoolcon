@@ -10,7 +10,8 @@ namespace Swoolcon\Http;
 use Phalcon\Http\Request\Exception;
 use Phalcon\Http\Request\File;
 
-class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAwareInterface{
+class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAwareInterface
+{
 
     use HttpTrait;
 
@@ -41,14 +42,15 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
     private function _getRequest()
     {
         $requestObj = $this->getSwooleRequest();
-        $get = isset($requestObj->get) ? $requestObj->get : [];
-        $post = isset($requestObj->post) ? $requestObj->post : [];
+        $get        = isset($requestObj->get) ? $requestObj->get : [];
+        $post       = isset($requestObj->post) ? $requestObj->post : [];
 
-        return array_merge($get,$post);
+        return array_merge($get, $post);
     }
 
-    public function get($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false) {
-        return $this->getHelper($this->_getRequest(),$name,$filters,$defaultValue,$notAllowEmpty,$noRecursive);
+    public function get($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
+    {
+        return $this->getHelper($this->_getRequest(), $name, $filters, $defaultValue, $notAllowEmpty, $noRecursive);
     }
 
     /**
@@ -68,8 +70,9 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $noRecursive
      * @return mixed
      */
-    public function getPost($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false) {
-        return $this->getHelper($this->getSwooleRequest()->post,$name,$filters,$defaultValue,$notAllowEmpty,$noRecursive);
+    public function getPost($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
+    {
+        return $this->getHelper($this->getSwooleRequest()->post, $name, $filters, $defaultValue, $notAllowEmpty, $noRecursive);
     }
 
     /**
@@ -88,10 +91,15 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $noRecursive
      * @return mixed
      */
-    public function getPut($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false) {
-
-        //这个最后来弄
-        return '';
+    public function getPut($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
+    {
+        $put = $this->_putCache;
+        if (!is_array($put)) {
+            $put = [];
+            parse_str($this->getRawBody(), $put);
+            $this->_putCache = $put;
+        }
+        return $this->getHelper($put, $name, $filters, $defaultValue, $notAllowEmpty, $noRecursive);
     }
 
     /**
@@ -113,8 +121,9 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $noRecursive
      * @return mixed
      */
-    public function getQuery($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false) {
-        return $this->getHelper($this->getSwooleRequest()->post,$name,$filters,$defaultValue,$notAllowEmpty,$noRecursive);
+    public function getQuery($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
+    {
+        return $this->getHelper($this->getSwooleRequest()->post, $name, $filters, $defaultValue, $notAllowEmpty, $noRecursive);
     }
 
     /**
@@ -130,29 +139,30 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @return array|null
      * @throws Exception
      */
-    protected final function getHelper(array $source, $name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false) {
-        if($name === null){
+    protected final function getHelper(array $source, $name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
+    {
+        if ($name === null) {
             return $source;
         }
 
-        if(!isset($source[$name]) || !$source[$name]){
+        if (!isset($source[$name]) || !$source[$name]) {
             return $defaultValue;
         }
         $value = $source[$name];
 
-        if(null !== $filters){
+        if (null !== $filters) {
             $filter = $this->_filter;
-            if(!is_object($filter)){
+            if (!is_object($filter)) {
                 $dependencyInjector = $this->_dependencyInjector;
-                if(!is_object($dependencyInjector)){
+                if (!is_object($dependencyInjector)) {
                     throw new Exception('A dependency injection object is required to access the "filter" service');
                 }
-                $filter= $dependencyInjector->getShared('filter');
+                $filter        = $dependencyInjector->getShared('filter');
                 $this->_filter = $filter;
             }
             $value = $filter->sanitize($value, $filters, $noRecursive);
         }
-        if(empty($value) && $notAllowEmpty === true){
+        if (empty($value) && $notAllowEmpty === true) {
             return $defaultValue;
         }
         return $value;
@@ -165,8 +175,9 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $name
      * @return string|null
      */
-    public function getServer($name) {
-        $name = strtolower($name);
+    public function getServer($name)
+    {
+        $name    = strtolower($name);
         $request = $this->getSwooleRequest();
         return isset($request->server[$name]) ? $request->server[$name] : null;
     }
@@ -177,9 +188,10 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $name
      * @return bool
      */
-    public function has($name) {
+    public function has($name)
+    {
         $request = $this->_getRequest();
-        return  isset($request[$name]);
+        return isset($request[$name]);
     }
 
     /**
@@ -188,7 +200,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $name
      * @return bool
      */
-    public function hasPost($name) {
+    public function hasPost($name)
+    {
         return isset($this->getSwooleRequest()->post[$name]);
     }
 
@@ -198,7 +211,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $name
      * @return bool
      */
-    public function hasPut($name) {
+    public function hasPut($name)
+    {
         //以后来弄
         return false;
     }
@@ -209,7 +223,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $name
      * @return bool
      */
-    public function hasQuery($name) {
+    public function hasQuery($name)
+    {
         return isset($this->getSwooleRequest()->get[$name]);
     }
 
@@ -219,7 +234,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $name
      * @return bool
      */
-    public final function hasServer($name) {
+    public final function hasServer($name)
+    {
         $server = $this->getServer($name);
         return $server ? true : false;
     }
@@ -230,11 +246,12 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $header
      * @return string
      */
-    public final function getHeader($header) {
+    public final function getHeader($header)
+    {
         $header = strtolower($header);
-        $header = str_replace('http_','', $header);
-        $header = str_replace('HTTP_','', $header);
-        $header = str_replace('_','-', $header);
+        $header = str_replace('http_', '', $header);
+        $header = str_replace('HTTP_', '', $header);
+        $header = str_replace('_', '-', $header);
 
         $request = $this->getSwooleRequest();
 
@@ -247,16 +264,17 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getScheme() {
+    public function getScheme()
+    {
         $https = $this->getServer('https');
-        if($https){
-            if($https == 'off'){
+        if ($https) {
+            if ($https == 'off') {
                 $scheme = 'http';
 
-            }else{
+            } else {
                 $scheme = 'https';
             }
-        }else{
+        } else {
 
             $scheme = 'http';
         }
@@ -268,7 +286,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isAjax() {
+    public function isAjax()
+    {
         return $this->getHeader('X_REQUESTED_WITH') == 'XMLHttpRequest';
         //return $this->getServer('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest';
     }   //
@@ -278,13 +297,14 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isSoap() {
+    public function isSoap()
+    {
         //if($this->getServer('HTTP_SOAPACTION')){
-        if($this->getHeader('SOAPACTION')){
+        if ($this->getHeader('SOAPACTION')) {
             return true;
-        }else{
+        } else {
             $contentType = $this->getContentType();
-            if (!empty($contentType) && strpos($contentType,'application/soap+xml')!==false ) {
+            if (!empty($contentType) && strpos($contentType, 'application/soap+xml') !== false) {
                 return true;
             }
         }
@@ -296,7 +316,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isSoapRequested() {
+    public function isSoapRequested()
+    {
         return $this->isSoap();
     }
 
@@ -305,7 +326,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isSecure() {
+    public function isSecure()
+    {
         return $this->getScheme() === 'https';
     }
 
@@ -314,7 +336,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isSecureRequest() {
+    public function isSecureRequest()
+    {
         return $this->isSecure();
     }
 
@@ -323,7 +346,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getRawBody() {
+    public function getRawBody()
+    {
         if (empty($this->_rawBody)) {
             $this->_rawBody = $this->getSwooleRequest()->rawContent();
         }
@@ -336,12 +360,13 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $associative
      * @return array|bool|\stdClass
      */
-    public function getJsonRawBody($associative = false) {
+    public function getJsonRawBody($associative = false)
+    {
         $rawBody = $this->getRawBody();
-        if(!is_string($rawBody)){
+        if (!is_string($rawBody)) {
             return false;
         }
-        return json_decode($rawBody,$associative);
+        return json_decode($rawBody, $associative);
     }
 
     /**
@@ -349,8 +374,9 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getServerAddress() {
-        if($addr = $this->getServer('SERVER_ADDR')){
+    public function getServerAddress()
+    {
+        if ($addr = $this->getServer('SERVER_ADDR')) {
             return $addr;
         }
 
@@ -362,8 +388,9 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getServerName() {
-        if($serverName = $this->getServer('SERVER_NAME')){
+    public function getServerName()
+    {
+        if ($serverName = $this->getServer('SERVER_NAME')) {
             return $serverName;
         }
         return 'localhost';
@@ -395,27 +422,28 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getHttpHost() {
+    public function getHttpHost()
+    {
         $strict = $this->_strictHostCheck;
 
         $host = $this->getHeader('host');
-        if(!$host){
+        if (!$host) {
             $host = $this->getServer('SERVER_NAME');
-            if(!$host){
+            if (!$host) {
                 $host = $this->getServer('SERVER_ADDR');
             }
         }
 
         if ($host && $strict) {
             $host = strtolower(trim($host));
-            if(strpos($host,':') !==false){
+            if (strpos($host, ':') !== false) {
                 //$host = preg_replace('/:[[:digit:]]+$/', '', $host);
 
-                $host = preg_replace('/:[\d]+$/','', $host);
+                $host = preg_replace('/:[\d]+$/', '', $host);
             }
 
-            if('' != preg_replace('/[a-z0-9]+\.?/','',$host)){
-                throw new \UnexpectedValueException('Invalid host ',$host);
+            if ('' != preg_replace('/[a-z0-9]+\.?/', '', $host)) {
+                throw new \UnexpectedValueException('Invalid host ', $host);
             }
         }
 
@@ -428,7 +456,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $flag
      * @return Request
      */
-    public function setStrictHostCheck($flag = true) {
+    public function setStrictHostCheck($flag = true)
+    {
         $this->_strictHostCheck = $flag;
         return $this;
     }
@@ -438,7 +467,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isStrictHostCheck() {
+    public function isStrictHostCheck()
+    {
         return $this->_strictHostCheck;
     }
 
@@ -447,13 +477,14 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return int
      */
-    public function getPort() {
+    public function getPort()
+    {
         $host = $this->getHeader('host');
-        if($host){
+        if ($host) {
             $pos = strpos($host, ':');
-            if(false !== $pos){
-                return intval(substr($host,$pos+1));
-            }else{
+            if (false !== $pos) {
+                return intval(substr($host, $pos + 1));
+            } else {
                 return 'https' === $this->getScheme() ? 443 : 80;
             }
         }
@@ -466,8 +497,9 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public final function getURI() {
-        if($uri = $this->getServer('REQUEST_URI')){
+    public final function getURI()
+    {
+        if ($uri = $this->getServer('REQUEST_URI')) {
             return $uri;
         }
 
@@ -480,25 +512,26 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $trustForwardedHeader
      * @return string|bool
      */
-    public function getClientAddress($trustForwardedHeader = false) {
+    public function getClientAddress($trustForwardedHeader = false)
+    {
         $addr = null;
-        if($trustForwardedHeader){
+        if ($trustForwardedHeader) {
             //$addr = $this->getServer('HTTP_X_FORWARDED_FOR');
             $addr = $this->getHeader('X_FORWARDED_FOR');
-            if($addr === null){
+            if ($addr === null) {
                 //$addr = $this->getServer('HTTP_CLIENT_IP'); //
                 $addr = $this->getHeader('CLIENT_IP'); //
             }
         }
 
-        if($addr === null){
+        if ($addr === null) {
             $addr = $this->getServer('REMOTE_ADDR');
         }
 
-        if(is_string($addr)){
-            if(strpos($addr,',')){
+        if (is_string($addr)) {
+            if (strpos($addr, ',')) {
                 return explode(',', $addr)[0];
-            }else{
+            } else {
                 return $addr;
             }
         }
@@ -515,24 +548,25 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public final function getMethod() {
+    public final function getMethod()
+    {
         $returnMethod = '';
 
         if ($requestMethod = $this->getServer('REQUEST_METHOD')) {
             $returnMethod = $requestMethod;
         }
 
-        if('POST' == $requestMethod){
-            if($overridedMethod = $this->getHeader('X-HTTP-METHOD-OVERRIDE')){
+        if ('POST' == $requestMethod) {
+            if ($overridedMethod = $this->getHeader('X-HTTP-METHOD-OVERRIDE')) {
                 $returnMethod = $overridedMethod;
-            }else if($this->_httpMethodParameterOverride){
-                if($spoofedMethod = $this->_getRequest()['_method']){
+            } else if ($this->_httpMethodParameterOverride) {
+                if ($spoofedMethod = $this->_getRequest()['_method']) {
                     $returnMethod = $spoofedMethod;
                 }
             }
         }
 
-        if(!$this->isValidHttpMethod($returnMethod)){
+        if (!$this->isValidHttpMethod($returnMethod)) {
             $returnMethod = 'GET';
         }
 
@@ -544,7 +578,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getUserAgent() {
+    public function getUserAgent()
+    {
         return $this->getHeader('USER_AGENT') ? $this->getHeader('USER_AGENT') : '';
     }
 
@@ -554,7 +589,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $method
      * @return bool
      */
-    public function isValidHttpMethod($method) {
+    public function isValidHttpMethod($method)
+    {
         switch (strtoupper($method)) {
             case 'GET':
             case 'POST':
@@ -566,7 +602,7 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
             case 'PURGE':
             case 'GRACE':
             case 'CONNECT':
-            return true;
+                return true;
         }
 
         return false;
@@ -581,7 +617,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @return bool
      * @throws Exception
      */
-    public function isMethod($methods, $strict = false) {
+    public function isMethod($methods, $strict = false)
+    {
         $httpMethod = $this->getMethod();
         if (is_string($methods)) {
             if ($strict && !$this->isValidHttpMethod($methods)) {
@@ -590,16 +627,16 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
             return $methods == $httpMethod;
         }
 
-        if(is_array($methods)){
+        if (is_array($methods)) {
             foreach ($methods as $method) {
-                if($this->isMethod($method,$strict)){
+                if ($this->isMethod($method, $strict)) {
                     return true;
                 }
             }
             return false;
         }
 
-        if($strict){
+        if ($strict) {
             throw new Exception('Invalid HTTP method:non-string');
         }
         return false;
@@ -611,7 +648,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isPost() {
+    public function isPost()
+    {
         return $this->getMethod() == 'POST';
     }
 
@@ -620,7 +658,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isGet() {
+    public function isGet()
+    {
         return $this->getMethod() == 'GET';
     }
 
@@ -629,7 +668,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isPut() {
+    public function isPut()
+    {
         return $this->getMethod() == 'PUT';
     }
 
@@ -638,7 +678,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isPatch() {
+    public function isPatch()
+    {
         return $this->getMethod() == 'PATCH';
     }
 
@@ -647,7 +688,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isHead() {
+    public function isHead()
+    {
         return $this->getMethod() == 'HEAD';
     }
 
@@ -656,7 +698,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isDelete() {
+    public function isDelete()
+    {
         return $this->getMethod() == 'DELETE';
     }
 
@@ -665,7 +708,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isOptions() {
+    public function isOptions()
+    {
         return $this->getMethod() == 'OPTIONS';
     }
 
@@ -674,7 +718,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isPurge() {
+    public function isPurge()
+    {
         return $this->getMethod() == 'PURGE';
     }
 
@@ -683,7 +728,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isTrace() {
+    public function isTrace()
+    {
         return $this->getMethod() == 'TRACE';
     }
 
@@ -692,7 +738,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return bool
      */
-    public function isConnect() {
+    public function isConnect()
+    {
         return $this->getMethod() == 'CONNECT';
     }
 
@@ -702,22 +749,23 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $onlySuccessful
      * @return long
      */
-    public function hasFiles($onlySuccessful = false) {
+    public function hasFiles($onlySuccessful = false)
+    {
         $numberFiles = 0;
 
         $files = $this->getSwooleRequest()->files;
-        if(!is_array($files)){
+        if (!is_array($files)) {
             return 0;
         }
 
         foreach ($files as $file) {
-            if($error = $file['error']){
-                if(!is_array($error)){
+            if ($error = $file['error']) {
+                if (!is_array($error)) {
                     $numberFiles++;
                 }
             }
 
-            if(is_array($error)){
+            if (is_array($error)) {
                 $numberFiles += $this->hasFileHelper($error, $onlySuccessful);
             }
         }
@@ -732,21 +780,22 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $onlySuccessful
      * @return long
      */
-    protected final function hasFileHelper($data, $onlySuccessful) {
+    protected final function hasFileHelper($data, $onlySuccessful)
+    {
         $numberFiles = 0;
 
-        if(!is_array($data)){
+        if (!is_array($data)) {
             return 1;
         }
 
         foreach ($data as $value) {
-            if(!is_array($value)){
+            if (!is_array($value)) {
                 if (!$value || !$onlySuccessful) {
                     $numberFiles++;
                 }
             }
 
-            if(is_array($value)){
+            if (is_array($value)) {
                 $numberFiles += $this->hasFileHelper($value, $onlySuccessful);
             }
         }
@@ -760,13 +809,14 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param bool $onlySuccessful
      * @return File[]
      */
-    public function getUploadedFiles($onlySuccessful = false) {
+    public function getUploadedFiles($onlySuccessful = false)
+    {
         $files = [];
 
         $superFiles = $this->getSwooleRequest()->files;
 
-        if(count($superFiles) > 0){
-            foreach ($superFiles as $prefix=>$input) {
+        if (count($superFiles) > 0) {
+            foreach ($superFiles as $prefix => $input) {
                 if (is_array($input['name'])) {
                     $smoothInput = $this->smoothFiles(
                         $input['name'],
@@ -778,20 +828,20 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
                     );
 
                     foreach ($smoothInput as $file) {
-                        if($onlySuccessful == false || $file['error'] == UPLOAD_ERR_OK){
+                        if ($onlySuccessful == false || $file['error'] == UPLOAD_ERR_OK) {
                             $dataFile = [
-                                'name' => $file['name'],
-                                'type' => $file['type'],
+                                'name'     => $file['name'],
+                                'type'     => $file['type'],
                                 'tmp_name' => $file['tmp_name'],
-                                'size' => $file['size'],
-                                'error' => $file['error'],
+                                'size'     => $file['size'],
+                                'error'    => $file['error'],
                             ];
 
                             $files[] = new File($input, $file['key']);
                         }
                     }
 
-                }else{
+                } else {
                     if ($onlySuccessful == false || $input['error'] == UPLOAD_ERR_OK) {
                         $files[] = new File($input, $prefix);
                     }
@@ -813,23 +863,24 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $prefix
      * @return array
      */
-    protected final function smoothFiles(array $names, array $types, array $tmp_names, array $sizes, array $errors, $prefix) {
+    protected final function smoothFiles(array $names, array $types, array $tmp_names, array $sizes, array $errors, $prefix)
+    {
         $files = [];
         foreach ($names as $idx => $name) {
             $p = $prefix . '.' . $idx;
 
-            if(is_string($name)){
+            if (is_string($name)) {
                 $files[] = [
-                    'name' => $name,
-                    'type' => $types[$idx],
+                    'name'     => $name,
+                    'type'     => $types[$idx],
                     'tmp_name' => $tmp_names[$idx],
-                    'size' => $sizes[$idx],
-                    'error' => $errors[$idx],
-                    'key' => $p,
+                    'size'     => $sizes[$idx],
+                    'error'    => $errors[$idx],
+                    'key'      => $p,
                 ];
             }
 
-            if(is_array($name)){
+            if (is_array($name)) {
                 $parentFiles = $this->smoothFiles(
                     $names[$idx],
                     $types[$idx],
@@ -853,17 +904,18 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return array
      */
-    public function getHeaders() {
+    public function getHeaders()
+    {
         //还有 content-type   content-length
 
         // abc-def   ->   Abc-Def
 
         $requestHeaders = $this->getSwooleRequest()->header;
-        $headers = [];
-        foreach($requestHeaders as $key=>$val){
+        $headers        = [];
+        foreach ($requestHeaders as $key => $val) {
             // abc-def -> Abc Def
-            $name = ucwords(strtolower(str_replace('-', ' ', $key)));
-            $name = str_replace(' ', '-', $name);
+            $name           = ucwords(strtolower(str_replace('-', ' ', $key)));
+            $name           = str_replace(' ', '-', $name);
             $headers[$name] = $val;
         }
         return $headers;
@@ -874,8 +926,9 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getHTTPReferer() {
-        if($httpReferer = $this->getHeader('REFERER')){
+    public function getHTTPReferer()
+    {
+        if ($httpReferer = $this->getHeader('REFERER')) {
             return $httpReferer;
         }
 
@@ -889,27 +942,28 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $name
      * @return array
      */
-    protected final function _getQualityHeader($serverIndex, $name) {
+    protected final function _getQualityHeader($serverIndex, $name)
+    {
         $returnedParts = [];
 
         //$tmpServer = $this->getServer($serverIndex);
         $tmpServer = $this->getHeader($serverIndex);
-        $tmpServer = preg_split('/,\s*/',$tmpServer,-1,PREG_SPLIT_NO_EMPTY);
+        $tmpServer = preg_split('/,\s*/', $tmpServer, -1, PREG_SPLIT_NO_EMPTY);
 
-        foreach($tmpServer as $part){
+        foreach ($tmpServer as $part) {
             $headerParts = [];
-            $tmpParts = preg_split('/\s*;\s*/', trim($part), -1, PREG_SPLIT_NO_EMPTY);
-            foreach($tmpParts as $headerPart){
-                if(strpos($headerPart,'=') !== false){
+            $tmpParts    = preg_split('/\s*;\s*/', trim($part), -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($tmpParts as $headerPart) {
+                if (strpos($headerPart, '=') !== false) {
                     $split = explode('=', $headerPart, 2);
 
                     if ($split[0] == 'q') {
                         $headerParts['quality'] = (double)$split[1];
-                    }else{
+                    } else {
                         $headerParts[$split[0]] = $split[1];
                     }
-                }else{
-                    $headerParts[$name] = $headerPart;
+                } else {
+                    $headerParts[$name]     = $headerPart;
                     $headerParts['quality'] = 1.0;
                 }
             }
@@ -928,20 +982,21 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      * @param string $name
      * @return string
      */
-    protected final function _getBestQuality(array $qualityParts, $name) {
-        $i = 0;
-        $quality = 0.0;
+    protected final function _getBestQuality(array $qualityParts, $name)
+    {
+        $i            = 0;
+        $quality      = 0.0;
         $selectedName = '';
 
         foreach ($qualityParts as $accept) {
 
             if ($i == 0) {
-                $qulity = (double)$accept['quality'];
+                $qulity       = (double)$accept['quality'];
                 $selectedName = $accept[$name];
-            }else{
+            } else {
                 $acceptQuality = (double)$accept['quality'];
                 if ($acceptQuality > $quality) {
-                    $quality = $acceptQuality;
+                    $quality      = $acceptQuality;
                     $selectedName = $accept[$name];
                 }
             }
@@ -957,14 +1012,15 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string|null
      */
-    public function getContentType() {
+    public function getContentType()
+    {
         $contentType = $this->getServer('CONTENT_TYPE');
 
-        if($contentType){
+        if ($contentType) {
             return $contentType;
 
-        }else{
-            if($contentType = $this->getHeader('CONTENT-TYPE')){
+        } else {
+            if ($contentType = $this->getHeader('CONTENT-TYPE')) {
                 return $contentType;
             }
         }
@@ -977,7 +1033,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return array
      */
-    public function getAcceptableContent() {
+    public function getAcceptableContent()
+    {
         return $this->_getQualityHeader('ACCEPT', 'accept');
     }
 
@@ -986,7 +1043,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getBestAccept() {
+    public function getBestAccept()
+    {
         return $this->_getBestQuality($this->getAcceptableContent(), 'accept');
     }
 
@@ -995,7 +1053,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return mixed
      */
-    public function getClientCharsets() {
+    public function getClientCharsets()
+    {
         return $this->_getQualityHeader('ACCEPT-CHARSET', 'charset');
     }
 
@@ -1004,7 +1063,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getBestCharset() {
+    public function getBestCharset()
+    {
         return $this->_getBestQuality($this->getClientCharsets(), 'charset');
     }
 
@@ -1013,7 +1073,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return array
      */
-    public function getLanguages() {
+    public function getLanguages()
+    {
         return $this->_getQualityHeader('ACCEPT-LANGUAGE', 'language');
     }
 
@@ -1022,7 +1083,8 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return string
      */
-    public function getBestLanguage() {
+    public function getBestLanguage()
+    {
         return $this->_getBestQuality($this->getLanguages(), 'language');
     }
 
@@ -1031,8 +1093,9 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return array|null
      */
-    public function getBasicAuth() {
-        if(($usename = $this->getServer('PHP_AUTH_USER')) && ($password = $this->getServer('PHP_AUTH_PW'))){
+    public function getBasicAuth()
+    {
+        if (($usename = $this->getServer('PHP_AUTH_USER')) && ($password = $this->getServer('PHP_AUTH_PW'))) {
 
             return [
                 'username' => $usename,
@@ -1049,18 +1112,19 @@ class Request implements \Phalcon\Http\RequestInterface, \Phalcon\Di\InjectionAw
      *
      * @return array
      */
-    public function getDigestAuth() {
+    public function getDigestAuth()
+    {
         $auth = [];
 
-        if($digest= $this->getServer('PHP_AUTH_DIGEST')){
+        if ($digest = $this->getServer('PHP_AUTH_DIGEST')) {
             $matches = [];
             //if(!preg_match_all('/(\w+)=([\'"]?)([^\'"" ,]+)\2/')){
-            if(!preg_match_all("#(\\w+)=(['\"]?)([^'\" ,]+)\\2#",$digest,$matches,2)){
+            if (!preg_match_all("#(\\w+)=(['\"]?)([^'\" ,]+)\\2#", $digest, $matches, 2)) {
                 return $auth;
             }
 
-            if(is_array($matches)){
-                foreach($matches as $match){
+            if (is_array($matches)) {
+                foreach ($matches as $match) {
                     $auth[$matches[1]] = $match[3];
                 }
             }

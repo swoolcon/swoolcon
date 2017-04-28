@@ -39,6 +39,7 @@ class MainTask extends Tasks
 
     public function onWorkerStart(SwooleServer $server, $workerId)
     {
+        //先这么做，以后可能有优化，把 app 放 workerstart 里面，而不是每次请求都new 一个
         $app               = new \Swoolcon\Application\Web();
         $this->application = $app;
 
