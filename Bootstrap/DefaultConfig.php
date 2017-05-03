@@ -22,3 +22,12 @@ if (!file_exists(config_path('Router.php'))) {
 if (!file_exists(config_path('CliRouter.php'))) {
     copy(content_path('Example/Config/CliRouter.php'), config_path('CliRouter.php'));
 }
+
+
+if (!file_exists(config_path('ModuleCli.php'))) {
+    copy(content_path('Example/Config/ModuleCli.php'), config_path('ModuleCli.php'));
+}
+
+if (!file_exists(config_path('ModuleWeb.php'))) {
+    copy(content_path('Example/Config/ModuleWeb.php'), config_path('ModuleWeb.php'));
+}

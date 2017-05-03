@@ -21,24 +21,35 @@ class ModulesServiceProvider extends ServiceProvider
 
     protected $modules = [];
 
-    public function configure()
+    protected $moduleConfig = 'ModuleWeb.php';
+
+
+    protected function modulesDefault()
     {
-        $app = [
-            'frontend'  => [
+        return [
+            'frontend' => [
                 'className' => FrontendModule::class,
                 'path'      => modules_web_path('Frontend/Module.php'),
                 'router'    => modules_web_path('Frontend/Config/Routing.php'),
             ],
 
-            'Error'  => [
+            'Error' => [
                 'className' => DefaultErrorModule::class,
                 'path'      => app_path('Swoolcon/Modules/Error/Module.php'),
                 'router'    => app_path('Swoolcon/Modules/Error/Config/Routing.php'),
             ],
 
         ];
+    }
 
-        $this->modules = array_merge($app, $this->modules);
+    public function configure()
+    {
+        //default
+        $app = $this->modulesDefault();
+
+        $modules = require config_path($this->moduleConfig);
+
+        $this->modules = array_merge($app, $this->modules,$modules);
     }
 
     public function register()
@@ -81,9 +92,16 @@ class ModulesServiceProvider extends ServiceProvider
 
         //在应用中注册模块
 
+        $this->registerModules($modules);
+
+    }
+
+    protected function registerModules($modules)
+    {
+        $di = $this->di;
         /** @var \Phalcon\Mvc\Application $application */
         $application = $di->getShared('bootstrap')->getApplication();
-        $application->registerModules($modules);
 
+        $application->registerModules($modules);
     }
 }
