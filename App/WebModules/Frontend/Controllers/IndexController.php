@@ -17,10 +17,5 @@ class IndexController extends Controllers
 
     }
 
-    public function testAction()
-    {
-        var_dump('test');
-        var_dump($this->request->get());
-        return false;
-    }
+
 }

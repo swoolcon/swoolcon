@@ -1,6 +1,6 @@
 <?php
 /**
- * @brief
+ * @brief 这是一个 restful demo ，以swoole_table 内存表来存储数据（服务停止后后清空数据）
  * Created by PhpStorm.
  * User: zy&cs
  * Date: 17-4-28
@@ -66,6 +66,9 @@ class RestfulTask extends Tasks
     {
         $this->_server     = $server;
         $this->application = new Micro();
+        $this->application->setRouter(require config_path('Router.php'))
+            ->setServiceProviderList(require config_path('ProvidersWeb.php'))
+            ->setModules(require config_path('ModuleWeb.php'));
 
     }
 

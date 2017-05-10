@@ -27,11 +27,6 @@ class ModulesServiceProvider extends ServiceProvider
     protected function modulesDefault()
     {
         return [
-            'frontend' => [
-                'className' => FrontendModule::class,
-                'path'      => modules_web_path('Frontend/Module.php'),
-                'router'    => modules_web_path('Frontend/Config/Routing.php'),
-            ],
 
             'Error' => [
                 'className' => DefaultErrorModule::class,
@@ -45,11 +40,10 @@ class ModulesServiceProvider extends ServiceProvider
     public function configure()
     {
         //default
-        $app = $this->modulesDefault();
+        $moduleDefault = $this->modulesDefault();
+        $modules = $this->di->get('bootstrap')->getModules();
 
-        $modules = require config_path($this->moduleConfig);
-
-        $this->modules = array_merge($app, $this->modules,$modules);
+        $this->modules = array_merge($moduleDefault, $this->modules,$modules);
     }
 
     public function register()

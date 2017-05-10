@@ -11,8 +11,14 @@ require __DIR__ . '/Bootstrap/Autoloader.php';
 
 // Create the Application
 $console = new \Swoolcon\Application\Command();
-
-$console->setDefaultModule('server')->register();
+$console->setRouter(function () {
+    $router = new Phalcon\Cli\Router();
+    $router->setDefaultTask('main');
+    $router->setDefaultAction('main');
+    return $router;
+})->setModules(require config_path('ModuleCli.php'))
+    ->setServiceProviderList(require config_path('ProvidersCli.php'))
+    ->setDefaultModule('server')->register();
 
 
 /** @var \Swoolcon\Cli\Console $app */

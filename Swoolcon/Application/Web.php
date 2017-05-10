@@ -73,7 +73,7 @@ class Web extends Application
         $di->setShared('swooleResponse', $this->swooleResponse);
 
         //这一部分放到config 文件夹里面
-        $this->initializeServiceProviders([
+        /*$this->initializeServiceProviders([
             ServiceProvider\EventManagerServiceProvider::class,
             ServiceProvider\ConfigServiceProvider::class,
             ServiceProvider\UrlResolverServiceProvider::class,
@@ -102,11 +102,16 @@ class Web extends Application
             ServiceProvider\SwooleRequestServiceProvider::class,
             ServiceProvider\SwooleResponseServiceProvider::class,
             ServiceProvider\DispatcherWebServiceProvider::class,
-            ServiceProvider\RoutingWebServiceProvider::class,
+            //ServiceProvider\RoutingWebServiceProvider::class,
+            ServiceProvider\RouterServiceProvider::class,
+
             ServiceProvider\SwooleSessionServiceProvider::class,
             ServiceProvider\SwooleWebDatabaseServiceProvider::class,
             ServiceProvider\SwooleStaticPropServiceProvider::class
-        ], $di);
+        ], $di);*/
+
+        $this->initializeServiceProviders($this->getServiceProviderList(),$di);
+
 
         return $this;
     }

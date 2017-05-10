@@ -21,6 +21,12 @@ use Swoolcon\ServiceProvider\EventManagerServiceProvider;
 abstract class Application
 {
 
+
+    /**
+     * @var array
+     */
+    protected $serviceProviderList = [];
+
     /**
      * @var ServiceProviderInterface[]
      */
@@ -47,6 +53,16 @@ abstract class Application
      * @var DiInterface
      */
     protected $di = null;
+
+
+    protected $modules = [];
+
+
+
+    /**
+     * @var \Swoolcon\Mvc\Router|\Phalcon\Cli\Router|\Phalcon\Mvc\Router
+     */
+    protected $router = null;
 
 
     public function __construct()
@@ -132,6 +148,39 @@ abstract class Application
     {
         $this->di = $di;
         return $this;
+    }
+
+    public function setModules(array $modules)
+    {
+        $this->modules = $modules;
+        return $this;
+    }
+
+    public function getModules()
+    {
+        return $this->modules;
+    }
+
+    public function setRouter($router)
+    {
+        $this->router = value($router);
+        return $this;
+    }
+
+    public function getRouter()
+    {
+        return $this->router;
+    }
+
+    public function setServiceProviderList($serviceProviderList)
+    {
+        $this->serviceProviderList = $serviceProviderList;
+        return $this;
+    }
+
+    public function getServiceProviderList()
+    {
+        return $this->serviceProviderList;
     }
 
 

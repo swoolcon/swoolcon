@@ -54,7 +54,8 @@ class Command extends Application
             ServiceProvider\RedisServiceProvider::class,
             ServiceProvider\ModulesServiceProvider::class,
             ServiceProvider\SwooleStaticPropServiceProvider::class,
-            ServiceProvider\RoutingCliServiceProvider::class,
+            //ServiceProvider\RoutingCliServiceProvider::class,
+            ServiceProvider\RouterServiceProvider::class,
             ServiceProvider\DispatcherCliServiceProvider::class,
             ServiceProvider\ModulesCliServiceProvider::class,
         ], $di);

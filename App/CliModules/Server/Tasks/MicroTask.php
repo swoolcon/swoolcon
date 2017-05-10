@@ -40,6 +40,9 @@ class MicroTask extends Tasks
     public function onWorkerStart(SwooleServer $server, $workerId)
     {
         $this->application = new Micro();
+        $this->application->setRouter(require config_path('Router.php'))
+            ->setServiceProviderList(require config_path('ProvidersWeb.php'))
+            ->setModules(require config_path('ModuleWeb.php'));
 
     }
 

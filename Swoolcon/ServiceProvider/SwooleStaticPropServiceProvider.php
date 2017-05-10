@@ -7,6 +7,8 @@ use Swoolcon\SwoolconStaticProperty;
 
 class SwooleStaticPropServiceProvider extends ServiceProvider
 {
+    //有没有必要全部用这个
+    const SERVICE_NAME = 'swooleStaticProperty';
     /**
      * The Service name.
      * @var string

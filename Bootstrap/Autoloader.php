@@ -12,13 +12,13 @@ use Phalcon\Loader;
 require 'Constant.php';
 require 'Helper.php';
 
-
 (new Loader)->registerNamespaces([
     'App'      => BASE_PATH . '/App',
     'Swoolcon' => BASE_PATH . '/Swoolcon',
 ])->register();
 
+require BASE_PATH . '/vendor/autoload.php';
 
-require 'DefaultConfig.php';
-
-//require BASE_PATH . '/vendor/autoload.php';
+//env
+$dotEnv = new Dotenv\Dotenv(BASE_PATH);
+$dotEnv->load();

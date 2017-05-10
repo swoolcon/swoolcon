@@ -12,6 +12,7 @@ use App\CliModules\Server\Tasks;
 use Swoole\Http\Server as SwooleServer;
 use Swoole\Http\Request as SwooleRequest;
 use Swoole\Http\Response as SwooleResponse;
+
 class MainTask extends Tasks
 {
 
@@ -40,8 +41,10 @@ class MainTask extends Tasks
     public function onWorkerStart(SwooleServer $server, $workerId)
     {
         //先这么做，以后可能有优化，把 app 放 workerstart 里面，而不是每次请求都new 一个
-        $app               = new \Swoolcon\Application\Web();
-        $this->application = $app;
+        $this->application = new \Swoolcon\Application\Web();
+        $this->application->setRouter(require config_path('Router.php'))
+            ->setServiceProviderList(require config_path('ProvidersWeb.php'))
+            ->setModules(require config_path('ModuleWeb.php'));
 
     }
 
@@ -51,7 +54,7 @@ class MainTask extends Tasks
 
 
         //动态脚本处理 request_uri
-        $app = $this->application;
+        $app                  = $this->application;
         $request->get['_url'] = $request->server['request_uri'];
 
 
@@ -67,6 +70,5 @@ class MainTask extends Tasks
         unset($_POST);
         unset($_REQUEST);
         unset($_FILES);
-        unset($_ENV);
     }
 }

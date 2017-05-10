@@ -16,9 +16,7 @@ use Phalcon\Mvc\Application;
 
 error_reporting(E_ALL);
 
-defined('BASE_PATH') || define('BASE_PATH', __DIR__);
-
-require BASE_PATH . '/Bootstrap/Autoloader.php';
+require __DIR__ . '/Bootstrap/Autoloader.php';
 
 
 class ServerSwoole
@@ -47,8 +45,10 @@ class ServerSwoole
 
     public function onWorkerStart(SwooleServer $server, $workerId)
     {
-        $app               = new Swoolcon\Application\Web();
-        $this->application = $app;
+        $this->application = new Swoolcon\Application\Web();
+        $this->application->setRouter(require config_path('Router.php'))
+            ->setServiceProviderList(require config_path('ProvidersWeb.php'))
+            ->setModules(require config_path('ModuleWeb.php'));
 
     }
 
@@ -58,7 +58,7 @@ class ServerSwoole
 
 
         //动态脚本处理 request_uri
-        $app = $this->application;
+        $app                  = $this->application;
         $request->get['_url'] = $request->server['request_uri'];
 
 
@@ -74,7 +74,6 @@ class ServerSwoole
         unset($_POST);
         unset($_REQUEST);
         unset($_FILES);
-        unset($_ENV);
     }
 
 
